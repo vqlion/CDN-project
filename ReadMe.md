@@ -17,4 +17,3 @@ Where to get the file :
 
 DHT : Distributed Hash Table : 
 Quand on veut un fichier, on le hash, puis on a une table qui lie les IP des serveurs qui possèdent le fichier en fonction de la valeur de hash (dans une plage). Avantages : on est jamais obligé de repropager la table puisqu'elle n'est pas statique. 
-
