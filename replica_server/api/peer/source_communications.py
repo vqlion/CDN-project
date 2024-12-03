@@ -24,6 +24,8 @@ def init(app):
         
     @app.route('/upload-hash-table', methods=["PUT"])
     def upload_hash_table():
-        with open("hash-table.json", "w") as json_file:
-            json.dump(request.json, json_file)
-        return Response("", 200)
+        if request.json:
+            with open("hash-table.json", "w") as json_file:
+                json.dump(request.json["hash_table"], json_file)
+            return Response("", 200)
+        return Response("", 500)
