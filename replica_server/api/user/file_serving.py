@@ -1,4 +1,4 @@
-from flask import send_from_directory, request
+from flask import send_from_directory, request, Response
 import os.path
 from dotenv import load_dotenv
 import requests
@@ -28,10 +28,3 @@ def init(app):
 
             return send_from_directory(STATIC_FOLDER, file_name)
         
-    @app.route('/upload', methods=["PUT"])
-    def upload_files():
-        if request.files:
-            print(request.files)
-            print(request.files["default.png"])
-            for file in request.files:
-                print(file) # TODO: save files to contents folder

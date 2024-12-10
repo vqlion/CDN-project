@@ -1,5 +1,11 @@
 from flask import Flask, send_file, redirect
 import os.path
+from services.files_service import *
+from services.distribution_service import *
+
+ips_list_mock = ["http://127.0.0.1:5002", "http://127.0.0.1:5001"]
+
+dir_path = '/home/val/Documents/5TC/CDN/CDN-project/main_server/contents'
 
 # creates a Flask application 
 app = Flask(__name__) 
@@ -15,4 +21,12 @@ def fetch_file(filename) :
 
 # run the application 
 if __name__ == "__main__": 
-	app.run(host="0.0.0.0", debug=True)
+    files_list = list_files(dir_path)
+    files_hashes = hash_filenames(files_list)
+    hash_table = build_hash_table(ips_list_mock)
+
+    filename_ips_map = map_filenames_to_ips(files_hashes, hash_table)
+    distribute_hash_table(hash_table, ips_list_mock)
+    distribute_files(filename_ips_map, ips_list_mock)
+
+    app.run(host="0.0.0.0", debug=True)

@@ -1,21 +1,14 @@
 import sys
 import hashlib
+import json
 
 h = hashlib.md5()
-digest_size_bit = h.digest_size*8
-print(digest_size_bit)
-
-table = [
-    {
-        "hash": (2**digest_size_bit - 1) / 2,
-        "ip": "1.1.1.1"
-    }, {
-        "hash": (2**digest_size_bit - 1),
-        "ip": "2.2.2.2"
-    }
-]
 
 def get_ip_from_filename(filename):
+    with open('hash-table.json', 'r') as f:
+        table = json.load(f)
+
+    h = hashlib.md5()
     h.update(bytes(filename, 'utf-8'))
     filename_hash = h.hexdigest()
     filename_hash = int(filename_hash, 16)
@@ -24,4 +17,4 @@ def get_ip_from_filename(filename):
         if filename_hash < entry['hash']:
             return entry['ip']
         
-print(get_ip_from_filename('deault1.png'))
+# print(get_ip_from_filename('deauzeslt1.png'))

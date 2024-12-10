@@ -4,6 +4,7 @@ import hashlib
 
 h = hashlib.md5()
 digest_size_bit = h.digest_size*8
+ips_list_mock = ["http://127.0.0.1:5002", "http://127.0.0.1:5001"]
 
 dir_path = '/home/val/Documents/5TC/CDN/CDN-project/main_server/contents'
 
@@ -45,10 +46,10 @@ def map_filenames_to_ips(hash_filenames, hash_table):
                 break
     return filename_ips
 
-files_list = list_files(dir_path)
-files_hashes = hash_filenames(files_list)
+# files_list = list_files(dir_path)
+# files_hashes = hash_filenames(files_list)
 
-hash_table = build_hash_table(["1.1.1.1", "2.2.2.2", "3.3.3.3"])
-print(files_hashes)
-print(hash_table)
-print(map_filenames_to_ips(files_hashes, hash_table))
+# hash_table = build_hash_table(ips_list_mock)
+# print(files_hashes)
+# print(hash_table)
+# print(map_filenames_to_ips(files_hashes, hash_table))
