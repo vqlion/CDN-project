@@ -1,5 +1,5 @@
 from typing import Dict, List
-from cached_file import CachedFile
+from services.cached_file import CachedFile
 from time import time, sleep
 import requests
 from datetime import datetime
@@ -129,7 +129,7 @@ class LRUCache() :
         """
             get from distant server
         """
-        response = requests.get("http://192.168.45.54:5000/contents/" + new_filename)
+        response = requests.get("http://127.0.0.1:5000/contents/" + new_filename)
         file = response.content
 
         print(f"HEADERS : {response.headers}")
