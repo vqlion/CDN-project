@@ -162,8 +162,9 @@ class LRUCache() :
 
         if response.headers.get("X-Custom-Filename") == "default.png" :
             self.pretty_print("Main server returned default image, doesn't have the file either")
-            new_filename = os.path.join(ROOT_DIR, "default.png")
-        save_path = os.path.join(ROOT_DIR, "contents/", new_filename)
+            save_path = os.path.join(ROOT_DIR, "contents/default.png")
+        else : 
+            save_path = os.path.join(ROOT_DIR, "contents/", new_filename)
         with open(save_path, "wb") as file_path : 
             file_path.write(file)
         return new_filename

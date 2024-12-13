@@ -16,7 +16,7 @@ def init(app, cache):
         file_name = file_to_send.filename
         file_path = os.path.join(ROOT_DIR, file_dir, file_name)
         print(f"FILE PATH IS {file_path}")
-        default_file_path = os.path.joint(ROOT_DIR, "contents/default.png")
+        default_file_path = os.path.join(ROOT_DIR, "contents/default.png")
         exists = os.path.isfile(file_path)
         if exists :
             return send_file(file_path) 

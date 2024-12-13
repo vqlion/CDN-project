@@ -1,7 +1,5 @@
-from flask import send_from_directory, request, Response
+from flask import request, Response
 import os.path
-import requests
-import re
 import json
 
 from settings import ROOT_DIR, HASH_TABLE_NAME
