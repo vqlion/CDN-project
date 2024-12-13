@@ -10,17 +10,21 @@ import shutil
 
 """
     TO-DO : 
+
+    - Pb quand on demande deux fois une default image, y'en a quand meme une qui est supprimée du côté du replica
     - add logging ? 
     - add error handling ? 
     - get current files via a json instead of data dict ? 
     - replace user and server interactions with api calls
-"""
+    - pb de default.png dans main_server (see readme)
+    - pb de taille de cache (n-1 ?)
+""" 
 
 class LRUCache() : 
     def __init__(self):
         self.data : List(CachedFile) = [] # list de CachedFiles
         self.fill_data_with_existing_files()
-        self.cache_limit : int = 3 # num of files that can be hold in the cache
+        self.cache_limit : int = 5 # num of files that can be hold in the cache
 
 
     def retreive_file_from_dataset(self, filename : str) -> CachedFile :
@@ -59,7 +63,6 @@ class LRUCache() :
             If file is already in the cache call send_directly
             Else call send_and_change_cache
         """
-        #filename = input("What file do you want to retreive : ")
         self.pretty_print(f"Got asked for file : {filename}")
         file = self.retreive_file_from_dataset(filename=filename)
         if file is not None :
@@ -74,13 +77,12 @@ class LRUCache() :
         """
             send file back to the user that asked
         """
-        print(f"SENDING FILE :")
+        self.pretty_print(f"SENDING FILE :")
         file.file_to_string()
 
-        image_path = "contents/" + file.filename
-        image = Image.open(image_path)
+        """image = Image.open(image_path)
         image.show()
-        sleep(0.5)
+        sleep(0.5)"""
 
 
     def send_directly(self, file : CachedFile) :
@@ -88,7 +90,7 @@ class LRUCache() :
             send the asked file and update its timestamp 
         """
         file.change_last_used()
-        #self.send_file(file)
+        self.send_file(file)
 
 
     def send_and_change_cache(self, filename : str) :
@@ -100,12 +102,12 @@ class LRUCache() :
             print("File retreival was impossible, no one has it. Sorry owo")
         new_file = CachedFile(new_file, self.get_next_id())
         self.update_cache(new_file)
-        #self.send_file(new_file)
+        self.send_file(new_file)
 
 
-    def get_file_from_distant_server(self, new_filename : str) :
+    def get_file_from_distant_server_test(self, new_filename : str) :
         """
-            get from distant server
+            get from distant server locally for tests (without any api calls)
         """
         path = "distant_server_contents"
         filenames = next(walk(path), (None, None, []))[2]  # [] if no file
@@ -117,6 +119,25 @@ class LRUCache() :
                 print(f"Copied file from {src} to {dst}")
                 return filename
         return None
+    
+
+    def get_file_from_distant_server(self, new_filename : str) :
+        """
+            get from distant server
+        """
+        response = requests.get("http://127.0.0.1:5000/contents/" + new_filename)
+        file = response.content
+
+        print(f"HEADERS : {response.headers}")
+
+        if response.headers.get("X-Custom-Filename") == "default.png" :
+            self.pretty_print("Main server returned default image, doesn't have the file either")
+            save_path = "contents/default.png"
+        else : 
+            save_path = "contents/" + new_filename
+        with open(save_path, "wb") as file_path : 
+            file_path.write(file)
+        return new_filename
 
 
     def update_cache(self, new_file : CachedFile) :
@@ -124,7 +145,7 @@ class LRUCache() :
             Method used to update the cache
         """
         self.data.append(new_file)
-        if len(self.data) < self.cache_limit :
+        if len(self.data) <= self.cache_limit :
             self.pretty_print("Cache length was not reached yet, adding without removal")
             return
         self.pretty_print("Cache length limit reached, removing worst file")
@@ -146,7 +167,7 @@ class LRUCache() :
         os.remove(path)
 
 
-    def get_next_id(self) : 
+    def get_next_id(self) -> int : 
         """
             When adding file to data, to setup a unique id
         """
