@@ -6,7 +6,7 @@ h = hashlib.md5()
 digest_size_bit = h.digest_size*8
 ips_list_mock = ["http://127.0.0.1:5002", "http://127.0.0.1:5001"]
 
-dir_path = '/home/val/Documents/5TC/CDN/CDN-project/main_server/contents'
+dir_path = '/CDN-project/main_server/contents'
 
 def list_files(path):
     files_list = [f for f in listdir(path) if isfile(join(path, f))]

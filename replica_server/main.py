@@ -6,6 +6,9 @@ import os.path
 app = Flask(__name__)
 cache = LRUCache()
 
+@app.route("/hello") 
+def hello(): 
+    return "Hello, Welcome to GeeksForGeeks"
 @app.route("/ask_cache/<filename>") 
 def fetch_file(filename) :
     cache.get_file(filename)
@@ -19,4 +22,4 @@ def fetch_file(filename) :
 
 # run the application 
 if __name__ == "__main__" :
-	app.run(host="0.0.0.0", debug=True)
+	app.run(host="0.0.0.0", debug=True, port=5001)
