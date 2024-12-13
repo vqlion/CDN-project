@@ -1,4 +1,4 @@
-from flask import send_from_directory
+from flask import send_from_directory, request, Response
 import os.path
 from dotenv import load_dotenv
 import requests
@@ -27,3 +27,4 @@ def init(app):
                 f.write(file_data.content)
 
             return send_from_directory(STATIC_FOLDER, file_name)
+        
