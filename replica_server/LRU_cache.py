@@ -12,12 +12,16 @@ import shutil
     TO-DO : 
 
     - Pb quand on demande deux fois une default image, y'en a quand meme une qui est supprimée du côté du replica
+    - Différencier static et contents pour les fichiers de cache et ceux de base 
+    - ajouter un .env
+
     - add logging ? 
     - add error handling ? 
     - get current files via a json instead of data dict ? 
     - replace user and server interactions with api calls
     - pb de default.png dans main_server (see readme)
     - pb de taille de cache (n-1 ?)
+
 """ 
 
 class LRUCache() : 
@@ -125,7 +129,7 @@ class LRUCache() :
         """
             get from distant server
         """
-        response = requests.get("http://127.0.0.1:5000/contents/" + new_filename)
+        response = requests.get("http://192.168.45.54:5000/contents/" + new_filename)
         file = response.content
 
         print(f"HEADERS : {response.headers}")
