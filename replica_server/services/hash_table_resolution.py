@@ -1,11 +1,11 @@
-import sys
 import hashlib
 import json
+import os
 
-h = hashlib.md5()
+from settings import ROOT_DIR, HASH_TABLE_NAME
 
 def get_ip_from_filename(filename):
-    with open('hash-table.json', 'r') as f:
+    with open(os.path.join(ROOT_DIR, HASH_TABLE_NAME), 'r') as f:
         table = json.load(f)
 
     h = hashlib.md5()
@@ -17,4 +17,4 @@ def get_ip_from_filename(filename):
         if filename_hash < entry['hash']:
             return entry['ip']
         
-# print(get_ip_from_filename('deauzeslt1.png'))
+    return None

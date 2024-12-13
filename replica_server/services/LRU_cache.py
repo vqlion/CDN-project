@@ -1,5 +1,6 @@
 from typing import Dict, List
 from services.cached_file import CachedFile, Origin
+from services.hash_table_resolution import get_ip_from_filename
 from time import time, sleep
 import requests
 from datetime import datetime
@@ -7,6 +8,8 @@ from os import walk
 import os 
 from PIL import Image
 import shutil
+
+from settings import ROOT_DIR
 
 """
     TO-DO : 
@@ -61,10 +64,9 @@ class LRUCache() :
             Used only in init : lookup what files are in the content dir and populates self.data accordingly
         """
         print("\n\n Filling data with the files retreived from the main server at init : ")
-        base_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/replica_server'
         paths = ["contents", "static"] # no need to add static as it is emptied at initialisation
         for path in paths : 
-            full_path = os.path.join(base_path, path)
+            full_path = os.path.join(ROOT_DIR, path)
             filenames = next(walk(full_path), (None, None, []))[2]  # [] if no file
             for id, filename in enumerate(filenames) : 
                 origin = Origin.CACHED if path == "contents" else Origin.STATIC
@@ -147,15 +149,21 @@ class LRUCache() :
         """
             get from distant server
         """
-        response = requests.get("http://127.0.0.1:5000/contents/" + new_filename)
+
+        request_ip = get_ip_from_filename(new_filename)
+
+        if request_ip == None:
+            return None
+
+        response = requests.get("http://" + request_ip + ":5000/contents/" + new_filename)
         file = response.content
 
         print(f"HEADERS : {response.headers}")
 
         if response.headers.get("X-Custom-Filename") == "default.png" :
             self.pretty_print("Main server returned default image, doesn't have the file either")
-            new_filename = "default.png"
-        save_path = "replica_server/contents/" + new_filename
+            new_filename = os.path.join(ROOT_DIR, "default.png")
+        save_path = os.path.join(ROOT_DIR, "contents/", new_filename)
         with open(save_path, "wb") as file_path : 
             file_path.write(file)
         return new_filename
