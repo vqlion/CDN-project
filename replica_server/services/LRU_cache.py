@@ -155,7 +155,7 @@ class LRUCache() :
         if request_ip == None:
             return None
 
-        response = requests.get("http://" + request_ip + ":5000/contents/" + new_filename)
+        response = requests.get(request_ip + "/ask_cache/" + new_filename)
         file = response.content
 
         print(f"HEADERS : {response.headers}")

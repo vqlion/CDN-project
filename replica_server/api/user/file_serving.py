@@ -1,4 +1,4 @@
-from flask import Flask, send_file, redirect, request, make_response
+from flask import send_file, request, make_response
 from services.cached_file import Origin
 import os.path
 
