@@ -5,15 +5,16 @@ from services.distribution_service import *
 
 ips_list_mock = ["http://127.0.0.1:5001"]
 
-dir_path = '/home/val/Documents/5TC/CDN/CDN-project/main_server/contents/'
+#dir_path = '/home/val/Documents/5TC/CDN/CDN-project/main_server/contents/'
+dir_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/main_server/contents'
 
 # creates a Flask application 
 app = Flask(__name__) 
 
 @app.route("/contents/<filename>") 
 def fetch_file(filename) : 
-    file_path = dir_path + filename
-    default_file_path = dir_path + "default.png"
+    file_path = os.path.join(dir_path, filename)
+    default_file_path = os.path.join(dir_path, "default.png")
     exists = os.path.isfile(file_path)
     if exists :
         return send_file(file_path) 

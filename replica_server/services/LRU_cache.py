@@ -1,5 +1,5 @@
 from typing import Dict, List
-from services.cached_file import CachedFile
+from services.cached_file import CachedFile, Origin
 from time import time, sleep
 import requests
 from datetime import datetime
@@ -26,9 +26,24 @@ import shutil
 
 class LRUCache() : 
     def __init__(self):
+        print("CREATING AND INITIALIZING THE CACHE")
         self.data : List(CachedFile) = [] # list de CachedFiles
-        self.fill_data_with_existing_files()
         self.cache_limit : int = 5 # num of files that can be hold in the cache
+        self.empty_all_content_directories() # AVANT TOUT : vider le static et le cache
+
+
+    def empty_all_content_directories(self) : 
+        print("Emptying all cache directories for path : ")
+        base_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/replica_server'
+        paths = ["contents", "static"]
+        for path in paths:
+            full_path = os.path.join(base_path, path)
+            print(full_path)
+            if os.path.exists(full_path):  # Vérifie si le répertoire existe
+                shutil.rmtree(full_path)  # Supprime le répertoire entier
+                os.mkdir(full_path)  # Le recrée vide
+            else:
+                os.mkdir(full_path)  # Crée le répertoire s'il n'existe pas
 
 
     def retreive_file_from_dataset(self, filename : str) -> CachedFile :
@@ -45,11 +60,16 @@ class LRUCache() :
         """
             Used only in init : lookup what files are in the content dir and populates self.data accordingly
         """
-        path = "contents"
-        filenames = next(walk(path), (None, None, []))[2]  # [] if no file
-        for id, filename in enumerate(filenames) : 
-            new_file = CachedFile(filename=filename, id=id)
-            self.data.append(new_file)
+        print("\n\n Filling data with the files retreived from the main server at init : ")
+        base_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/replica_server'
+        paths = ["contents", "static"] # no need to add static as it is emptied at initialisation
+        for path in paths : 
+            full_path = os.path.join(base_path, path)
+            filenames = next(walk(full_path), (None, None, []))[2]  # [] if no file
+            for id, filename in enumerate(filenames) : 
+                origin = Origin.CACHED if path == "contents" else Origin.STATIC
+                new_file = CachedFile(filename=filename, id=id, origin=origin)
+                self.data.append(new_file)
         self.pretty_print("Cache state at init :")
         self.cache_to_string()
     
@@ -62,7 +82,7 @@ class LRUCache() :
             file.file_to_string()
 
 
-    def get_file(self, filename) :
+    def get_file(self, filename) -> CachedFile:
         """
             If file is already in the cache call send_directly
             Else call send_and_change_cache
@@ -71,42 +91,40 @@ class LRUCache() :
         file = self.retreive_file_from_dataset(filename=filename)
         if file is not None :
             self.pretty_print("This file is present in my cache")
-            self.send_directly(file)
+            sent_file = self.send_directly(file)
         else : 
             self.pretty_print("Don't have the file, need to fetch it")
-            self.send_and_change_cache(filename)
+            sent_file = self.send_and_change_cache(filename)
+        return sent_file
 
 
-    def send_file(self, file : CachedFile) :
+    def send_file(self, file : CachedFile) -> CachedFile :
         """
             send file back to the user that asked
         """
         self.pretty_print(f"SENDING FILE :")
         file.file_to_string()
-
-        """image = Image.open(image_path)
-        image.show()
-        sleep(0.5)"""
+        return file
 
 
-    def send_directly(self, file : CachedFile) :
+    def send_directly(self, file : CachedFile) -> CachedFile:
         """
             send the asked file and update its timestamp 
         """
         file.change_last_used()
-        self.send_file(file)
+        return self.send_file(file)
 
 
-    def send_and_change_cache(self, filename : str) :
+    def send_and_change_cache(self, filename : str) -> CachedFile :
         """
             get the asked file from distant server, send it and update the local cache
         """
         new_file = self.get_file_from_distant_server(filename)
         if new_file is None : 
             print("File retreival was impossible, no one has it. Sorry owo")
-        new_file = CachedFile(new_file, self.get_next_id())
+        new_file = CachedFile(new_file, self.get_next_id(), origin=Origin.CACHED)
         self.update_cache(new_file)
-        self.send_file(new_file)
+        return self.send_file(new_file)
 
 
     def get_file_from_distant_server_test(self, new_filename : str) :
@@ -136,9 +154,8 @@ class LRUCache() :
 
         if response.headers.get("X-Custom-Filename") == "default.png" :
             self.pretty_print("Main server returned default image, doesn't have the file either")
-            save_path = "contents/default.png"
-        else : 
-            save_path = "contents/" + new_filename
+            new_filename = "default.png"
+        save_path = "replica_server/contents/" + new_filename
         with open(save_path, "wb") as file_path : 
             file_path.write(file)
         return new_filename
@@ -149,25 +166,33 @@ class LRUCache() :
             Method used to update the cache
         """
         self.data.append(new_file)
-        if len(self.data) <= self.cache_limit :
+        if self.compute_cache_current_size() <= self.cache_limit :
             self.pretty_print("Cache length was not reached yet, adding without removal")
             return
         self.pretty_print("Cache length limit reached, removing worst file")
         self.remove_worst_score()
+
+    def compute_cache_current_size(self) : 
+        size = 0
+        for file in self.data : 
+            if file.origin == Origin.CACHED : 
+                size+=1
+        return size
     
 
     def remove_worst_score(self) :
         """"
             implement worst score removal
         """
-        worst_file = self.data[0]
+        worst_file = next((first_file for first_file in self.data if first_file.origin == Origin.CACHED), None) # find the first file of the list with STATIC origin
         for file in self.data : 
-            if file.last_used < worst_file.last_used : 
-                worst_file = file
+            if file.origin == Origin.CACHED : 
+                if file.last_used < worst_file.last_used : 
+                    worst_file = file
         print("Removing worst file from cache : ")
         worst_file.file_to_string()
         self.data.remove(worst_file)
-        path = "contents/" + worst_file.filename
+        path = "replica_server/contents/" + worst_file.filename
         os.remove(path)
 
 
