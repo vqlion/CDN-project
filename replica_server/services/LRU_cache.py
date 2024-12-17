@@ -34,7 +34,7 @@ class LRUCache() :
 
     def empty_all_content_directories(self) : 
         print("Emptying all cache directories for path : ")
-        base_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/replica_server'
+        base_path = '/replica_server'
         paths = ["contents", "static"]
         for path in paths:
             full_path = os.path.join(base_path, path)
@@ -61,7 +61,7 @@ class LRUCache() :
             Used only in init : lookup what files are in the content dir and populates self.data accordingly
         """
         print("\n\n Filling data with the files retreived from the main server at init : ")
-        base_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/replica_server'
+        base_path = '/replica_server'
         paths = ["contents", "static"] # no need to add static as it is emptied at initialisation
         for path in paths : 
             full_path = os.path.join(base_path, path)
