@@ -3,10 +3,8 @@ from services.cached_file import CachedFile, Origin
 from services.hash_table_resolution import get_ip_from_filename
 from time import time, sleep
 import requests
-from datetime import datetime
 from os import walk
 import os 
-from PIL import Image
 import shutil
 
 from settings import ROOT_DIR
@@ -37,10 +35,9 @@ class LRUCache() :
 
     def empty_all_content_directories(self) : 
         print("Emptying all cache directories for path : ")
-        base_path = '/home/eolia/Documents/INSA/5TC/CDN/CDN-project/replica_server'
         paths = ["contents", "static"]
         for path in paths:
-            full_path = os.path.join(base_path, path)
+            full_path = os.path.join(ROOT_DIR, path)
             print(full_path)
             if os.path.exists(full_path):  # Vérifie si le répertoire existe
                 shutil.rmtree(full_path)  # Supprime le répertoire entier
