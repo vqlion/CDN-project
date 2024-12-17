@@ -3,9 +3,9 @@ import os.path
 from services.files_service import *
 from services.distribution_service import *
 
-ips_list_mock = ["http://127.0.0.1:5002", "http://127.0.0.1:5001"]
+ips_list_mock = []
 
-dir_path = '/home/val/Documents/5TC/CDN/CDN-project/main_server/contents'
+dir_path = '/main_server/contents'
 
 # creates a Flask application 
 app = Flask(__name__) 

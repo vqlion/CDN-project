@@ -4,7 +4,7 @@ import hashlib
 
 h = hashlib.md5()
 digest_size_bit = h.digest_size*8
-ips_list_mock = ["http://127.0.0.1:5002", "http://127.0.0.1:5001"]
+ips_list_mock = []
 
 dir_path = '/CDN-project/main_server/contents'
 
