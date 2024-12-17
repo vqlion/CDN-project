@@ -1,3 +1,17 @@
+# Usage
+
+- copy `.env.example` to a `.env` and replace the correct values
+- install the dependencies with `pip install -r requirements.txt` 
+- launch the replicas servers first: `python3 replica_server/app.py`
+- launch the main server: `python3 main_server/app.py`
+- go to `your-server-ip/ask_cache/filename.png` to try it
+
+# Todo
+
+--> Problème : avec le default.png dans le main server, quand le file n'existe pas on renvoie le default mais sans prevenir le replica que c'est pas la file demandée et du coup le replica croit que c'est toujours le bon fichier
+
+# Planning
+
 Web server : en python, avec Flask
 --> pas d'ui, juste une API
 --> att ! bien faire tourner dans le venv (appelé env) avec . env/bin/activate
@@ -17,11 +31,3 @@ Where to get the file :
 
 DHT : Distributed Hash Table : 
 Quand on veut un fichier, on le hash, puis on a une table qui lie les IP des serveurs qui possèdent le fichier en fonction de la valeur de hash (dans une plage). Avantages : on est jamais obligé de repropager la table puisqu'elle n'est pas statique. 
-
-
-To get cache to run (rappel pour les debilos comme moi (eolia)): 
-- run /main_server/app.py in a terminal (port 5000)
-- run /replica_server/main.py in another term (port 5001)
-- from a browser, go to "http://127.0.0.1:5001/ask_cache/your_image.png" 
-
---> Problème : avec le default.png dans le main server, quand le file n'existe pas on renvoie le default mais sans prevenir le replica que c'est pas la file demandée et du coup le replica croit que c'est toujours le bon fichier
