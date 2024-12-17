@@ -4,9 +4,6 @@ import hashlib
 
 h = hashlib.md5()
 digest_size_bit = h.digest_size*8
-ips_list_mock = []
-
-dir_path = '/CDN-project/main_server/contents'
 
 def list_files(path):
     files_list = [f for f in listdir(path) if isfile(join(path, f))]
@@ -45,11 +42,3 @@ def map_filenames_to_ips(hash_filenames, hash_table):
                 })
                 break
     return filename_ips
-
-# files_list = list_files(dir_path)
-# files_hashes = hash_filenames(files_list)
-
-# hash_table = build_hash_table(ips_list_mock)
-# print(files_hashes)
-# print(hash_table)
-# print(map_filenames_to_ips(files_hashes, hash_table))
