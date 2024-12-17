@@ -11,7 +11,7 @@ STATIC_FOLDER = os.getenv('FILES_FOLDER')
 DEFAULT_FILE_PATH = os.getenv('DEFAULT_FILE_PATH')
 CENTRAL_SERVER_ADDRESS = os.getenv('CENTRAL_SERVER_ADDRESS')
 
-def init(app):
+def init(app, cache):
 
     @app.route('/upload', methods=["PUT"])
     def upload_files():
@@ -19,6 +19,9 @@ def init(app):
             files_list = request.files.values()
             for file in files_list:
                 file.save(os.path.join('./replica_server/static', file.filename))
+                print(f"Just saved the file : {file.filename} in static dir")
+            
+            cache.fill_data_with_existing_files()
             return Response("", 200)
         return Response("", 500)
         

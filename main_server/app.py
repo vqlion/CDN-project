@@ -12,8 +12,8 @@ app = Flask(__name__)
 
 @app.route("/contents/<filename>") 
 def fetch_file(filename) : 
-    file_path = "contents/" + filename
-    default_file_path = "contents/default.png"
+    file_path = os.path.join(dir_path, filename)
+    default_file_path = os.path.join(dir_path, "default.png")
     exists = os.path.isfile(file_path)
     if exists :
         return send_file(file_path) 
