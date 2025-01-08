@@ -13,6 +13,7 @@ RUN apt install -y traceroute
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
+EXPOSE 1
 EXPOSE 80
 EXPOSE 5000
 EXPOSE 5001
