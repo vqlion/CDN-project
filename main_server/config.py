@@ -9,4 +9,4 @@ MAIN_SERVER_CONTENT_FOLDER='contents'
 
 REPLICA_SERVER_PORT=5001
 
-REPLICAS_ADDRESSES="http://167.8.6.10:5000,http://167.8.6.11:5000" # format is "ip1,ip2,..." without spaces
+REPLICAS_ADDRESSES="http://167.8.6.10:5001,http://167.8.6.11:5001" # format is "ip1,ip2,..." without spaces
